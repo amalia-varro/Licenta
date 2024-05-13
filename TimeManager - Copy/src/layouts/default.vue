@@ -27,7 +27,7 @@
         </v-navigation-drawer>
         <div class="gradient-background">
           <!-- Dropdown menu -->
-          <v-menu v-model="menuOpen" style="margin-left: 1410px; margin-top: 65px;">
+          <v-menu v-model="menuOpen" class="menu-model">
             <!-- Menu items -->
             <v-list>
               <v-list-item @click="goToProfile">
@@ -39,10 +39,8 @@
             </v-list>
           </v-menu>
         </div>
-        <v-main style="padding-left: 300px">
-          <v-card-text>
+        <v-main>
             <router-view/>
-          </v-card-text>
         </v-main>
 
       </v-layout>
@@ -112,5 +110,10 @@ export default {
   position: relative;
   display: inline-block;
   margin-right: 10px; /* Adjust margin as needed */
+}
+
+.menu-model {
+  margin-top: 8vh;
+  margin-left: 91vw;
 }
 </style>

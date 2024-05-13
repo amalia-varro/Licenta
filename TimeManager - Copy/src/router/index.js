@@ -58,6 +58,16 @@ const router = createRouter({
           component: () => import('@/pages/AttendanceHistory.vue')
         },
       ]
+    },
+    {
+      path: "/teleworking",
+      component: DefaultLayout,
+      children: [
+        {
+          path: '',
+          component: () => import('@/pages/TeleworkingRequest.vue')
+        },
+      ]
     }
   ]
 })

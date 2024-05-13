@@ -2,39 +2,44 @@
   <v-container class="attendance-history">
     <!-- Top section -->
     <v-row class="top-section">
-      <v-col>
-        <v-select v-model="selectedMonth" :items="months"></v-select>
+      <v-col cols="5">
+        <v-select v-model="selectedMonth" placeholder="Month" :items="months"></v-select>
       </v-col>
-      <v-col>
-        <v-select v-model="selectedYear" :items="years"></v-select>
+      <v-col cols="5">
+        <v-select v-model="selectedYear" placeholder="Year" :items="years"></v-select>
       </v-col>
       <!-- Filter button -->
-      <v-col>
+      <v-col cols="2" class="mt-2">
         <v-btn @click="filterData" color="primary">Filter</v-btn>
       </v-col>
     </v-row>
 
     <!-- Table -->
-    <v-data-table :headers="headers" :items="desserts">
-      <template v-slot:item="{ item }">
-        <tr>
-          <td>{{ item.Day }}</td>
-          <td>{{ item.Type }}</td>
-          <td>{{ item.ArrivalTime }}</td>
-          <td>{{ item.LeaveTime }}</td>
-          <td>{{ item.Break }}</td>
-          <td>{{ item.WorkedHours }}</td>
-          <td>
-            <v-btn icon @click="editItem(item)">
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-            <v-btn icon @click="deleteItem(item)">
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
-          </td>
-        </tr>
-      </template>
-    </v-data-table>
+    <v-row>
+      <v-col cols="12">
+        <v-data-table :headers="headers" :items="desserts">
+          <template v-slot:item="{ item }">
+            <tr>
+              <td>{{ item.Day }}</td>
+              <td>{{ item.Type }}</td>
+              <td>{{ item.ArrivalTime }}</td>
+              <td>{{ item.LeaveTime }}</td>
+              <td>{{ item.Break }}</td>
+              <td>{{ item.WorkedHours }}</td>
+              <td>
+                <v-btn icon @click="editItem(item)">
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+                <v-btn icon @click="deleteItem(item)">
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </td>
+            </tr>
+          </template>
+        </v-data-table>
+      </v-col>
+    </v-row>
+
   </v-container>
 </template>
 
