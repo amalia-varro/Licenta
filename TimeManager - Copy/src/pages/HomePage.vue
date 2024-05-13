@@ -10,8 +10,8 @@ export default {
       showPopup: false,
       headers: [
         { title: 'Project', align: 'start', key: 'name' },
-        { title: 'Time', align: 'end', key: 'time' },
-        { title: 'Comments', align: 'end', key: 'time' }
+        { title: 'Time', align: '', key: 'time' },
+        { title: 'Comments', align: '', key: 'time' }
       ],
       desserts: [
         { name: 'Test Analysis', time: '' },
@@ -22,6 +22,11 @@ export default {
       dialogVisible: false,
       selectedRow: null,
       selectedRows: [],
+      selectedDropdown1: null,
+      selectedDropdown2: null,
+      dropdownOptions1: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      dropdownOptions2: [10, 20, 30, 40, 50],
+      inputField: '',
     };
   },
   methods: {
@@ -50,6 +55,17 @@ export default {
       }
     },
     closeDialog() {
+      this.dialogVisible = false;
+    },
+    saveInformation() {
+      this.dialogVisible = false;
+
+      // Save selected hour and minute values to the selected row
+      this.selectedRow.selectedHour = this.selectedDropdown1;
+      this.selectedRow.selectedMinute = this.selectedDropdown2;
+      this.selectedRow.comments = this.inputField;
+
+      // Close dialog
       this.dialogVisible = false;
     }
   }
@@ -145,6 +161,8 @@ export default {
             <v-checkbox v-model="selectedRows" :value="item"></v-checkbox>
           </td>
           <td>{{ item.name }}</td>
+          <td>{{ item.selectedHour }} hours {{ item.selectedMinute }} minutes</td>
+          <td>{{ item.comments }}</td>
         </tr>
       </template>
 
@@ -153,14 +171,36 @@ export default {
     <v-dialog v-model="dialogVisible" max-width="500">
       <v-card>
         <v-card-title>
-          Dialog Content
+          Worked hours
         </v-card-title>
         <v-card-text>
-          <!-- Dialog content goes here -->
-          <p>You clicked on: {{ selectedRow }}</p>
+          <v-row>
+            <!-- Hourglass icon -->
+            <v-col cols="1">
+              <v-icon>mdi-hourglass</v-icon>
+            </v-col>
+            <!-- Dropdowns -->
+            <v-col cols="4">
+              <v-select
+                v-model="selectedDropdown1"
+                :items="dropdownOptions1"
+                label="Hours"
+              ></v-select>
+            </v-col>
+            <v-col cols="4">
+              <v-select
+                v-model="selectedDropdown2"
+                :items="dropdownOptions2"
+                label="Minutes"
+              ></v-select>
+            </v-col>
+          </v-row>
+          <!-- Input field -->
+          <v-text-field v-model="inputField" label="Comments"></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-btn color="primary" @click="closeDialog">Close</v-btn>
+          <v-btn color="primary" @click="saveInformation">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
