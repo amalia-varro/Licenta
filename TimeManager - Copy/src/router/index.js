@@ -50,12 +50,12 @@ const router = createRouter({
       ]
     },
     {
-      path: "/test",
+      path: "/attendance",
       component: DefaultLayout,
       children: [
         {
           path: '',
-          component: () => import('@/pages/TestPage.vue')
+          component: () => import('@/pages/AttendanceHistory.vue')
         },
       ]
     }
