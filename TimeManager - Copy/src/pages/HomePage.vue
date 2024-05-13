@@ -9,15 +9,15 @@ export default {
       isChecked: false,
       showPopup: false,
       headers: [
-        { title: 'Project', align: 'start', key: 'name' },
-        { title: 'Time', align: '', key: 'time' },
-        { title: 'Comments', align: '', key: 'time' }
+        {title: 'Project', align: 'start', key: 'name'},
+        {title: 'Time', align: '', key: 'time'},
+        {title: 'Comments', align: '', key: 'time'}
       ],
       desserts: [
-        { name: 'Test Analysis', time: '' },
-        { name: 'Test Scripting', time: '' },
-        { name: 'Debugging', time: '' },
-        { name: 'Meetings', time: '' }
+        {name: 'Test Analysis', time: ''},
+        {name: 'Test Scripting', time: ''},
+        {name: 'Debugging', time: ''},
+        {name: 'Meetings', time: ''}
       ],
       dialogVisible: false,
       selectedRow: null,
@@ -73,142 +73,151 @@ export default {
 </script>
 
 
-
 <template>
-  <div class="container">
+  <v-container>
     <!-- Left Section -->
-    <div class="left-section">
-      <v-date-picker width="400"></v-date-picker>
-    </div>
-    <!-- Right Section -->
-    <div class="right-section">
+    <v-row>
       <v-col cols="6">
+        <v-date-picker></v-date-picker>
+      </v-col>
+      <!-- Right Section -->
+      <v-col cols="6" class="margin-top-right-section">
         <!-- Login Time Picker -->
-        <div class="time-picker-container">
-          <v-text-field
-            class="time-picker-field"
-            v-model="loginTime"
-            :active="loginModal"
-            :focused="loginModal"
-            label="Login Hour"
-            prepend-icon="mdi-clock-time-four-outline"
-            readonly
-          >
-            <v-dialog
-              v-model="loginModal"
-              activator="parent"
-              width="auto"
+        <v-row>
+          <v-col cols="8">
+            <v-text-field
+              v-model="loginTime"
+              :active="loginModal"
+              :focused="loginModal"
+              label="Login Hour"
+              prepend-icon="mdi-clock-time-four-outline"
+              readonly
             >
-              <v-time-picker
-                format="24hr"
-                v-if="loginModal"
-                v-model="loginTime"
-              ></v-time-picker>
-            </v-dialog>
-          </v-text-field>
-          <!-- Login Button -->
-          <v-btn rounded="xl" size="large" elevation="24" type="submit" color="purple-lighten-2" @click="login" class="button-margin">Login</v-btn>
-        </div>
+              <v-dialog
+                v-model="loginModal"
+                activator="parent"
+                width="auto"
+              >
+                <v-time-picker
+                  format="24hr"
+                  v-if="loginModal"
+                  v-model="loginTime"
+                ></v-time-picker>
+              </v-dialog>
+            </v-text-field>
+          </v-col>
+          <v-col cols="4">
+            <!-- Login Button -->
+            <v-btn rounded="xl" size="large" elevation="24" type="submit" color="purple-lighten-2" @click="login"
+                   class="button-margin">Login
+            </v-btn>
+          </v-col>
+        </v-row>
+
         <!-- Logout Time Picker -->
-        <div class="time-picker-container">
-          <v-text-field
-            class="time-picker-field"
-            v-model="logoutTime"
-            :active="logoutModal"
-            :focused="logoutModal"
-            label="Logout Hour"
-            prepend-icon="mdi-clock-time-four-outline"
-            readonly
-          >
-            <v-dialog
-              v-model="logoutModal"
-              activator="parent"
-              width="auto"
+        <v-row>
+          <v-col cols="8">
+            <v-text-field
+              v-model="logoutTime"
+              :active="logoutModal"
+              :focused="logoutModal"
+              label="Logout Hour"
+              prepend-icon="mdi-clock-time-four-outline"
+              readonly
             >
-              <v-time-picker
-                format="24hr"
-                v-if="logoutModal"
-                v-model="logoutTime"
-              ></v-time-picker>
-            </v-dialog>
-          </v-text-field>
-          <!-- Logout Button -->
-          <v-btn rounded="xl" size="large" elevation="24" type="submit" color="purple-lighten-2" @click="logout" class="button-margin">Logout</v-btn>
-        </div>
+              <v-dialog
+                v-model="logoutModal"
+                activator="parent"
+                width="auto"
+              >
+                <v-time-picker
+                  format="24hr"
+                  v-if="logoutModal"
+                  v-model="logoutTime"
+                ></v-time-picker>
+              </v-dialog>
+            </v-text-field>
+          </v-col>
+          <v-col cols="4">
+            <!-- Logout Button -->
+            <v-btn rounded="xl" size="large" elevation="24" type="submit" color="purple-lighten-2" @click="logout"
+                   class="button-margin">Logout
+            </v-btn>
+          </v-col>
+        </v-row>
         <v-combobox
           label="Break"
           :items="['10 min', '20 min', '30 min', '40 min', '50 min', '1 h']"
           prepend-icon="mdi-clock-time-four-outline"
         ></v-combobox>
       </v-col>
+    </v-row>
+    <!-- Add container for the table with fixed height and scroll -->
+    <v-row>
+      <v-col cols="12">
+        <v-data-table
+          :headers="headers"
+          :items="desserts"
+          :item-value="item => `${item.name}-${item.version}`"
+          items-per-page="5"
+          select-strategy="single"
+          show-select
+          @click:row="onRowClick"
+        >
+          <template v-slot:item="{ item }">
+            <tr @click="toggleCheckbox(item)">
+              <td>
+                <v-checkbox v-model="selectedRows" :value="item"></v-checkbox>
+              </td>
+              <td>{{ item.name }}</td>
+              <td>{{ item.selectedHour }} hours {{ item.selectedMinute }} minutes</td>
+              <td>{{ item.comments }}</td>
+            </tr>
+          </template>
 
-    </div>
-  </div>
-  <!-- Add container for the table with fixed height and scroll -->
-  <div class="table-container">
-    <v-data-table
-      :headers="headers"
-      :items="desserts"
-      :item-value="item => `${item.name}-${item.version}`"
-      items-per-page="5"
-      select-strategy="single"
-      show-select
-      @click:row="onRowClick"
-    >
-      <template v-slot:item="{ item }">
-        <tr @click="toggleCheckbox(item)">
-          <td>
-            <v-checkbox v-model="selectedRows" :value="item"></v-checkbox>
-          </td>
-          <td>{{ item.name }}</td>
-          <td>{{ item.selectedHour }} hours {{ item.selectedMinute }} minutes</td>
-          <td>{{ item.comments }}</td>
-        </tr>
-      </template>
+        </v-data-table>
 
-    </v-data-table>
-
-    <v-dialog v-model="dialogVisible" max-width="500">
-      <v-card>
-        <v-card-title>
-          Worked hours
-        </v-card-title>
-        <v-card-text>
-          <v-row>
-            <!-- Hourglass icon -->
-            <v-col cols="1">
-              <v-icon>mdi-hourglass</v-icon>
-            </v-col>
-            <!-- Dropdowns -->
-            <v-col cols="4">
-              <v-select
-                v-model="selectedDropdown1"
-                :items="dropdownOptions1"
-                label="Hours"
-              ></v-select>
-            </v-col>
-            <v-col cols="4">
-              <v-select
-                v-model="selectedDropdown2"
-                :items="dropdownOptions2"
-                label="Minutes"
-              ></v-select>
-            </v-col>
-          </v-row>
-          <!-- Input field -->
-          <v-text-field v-model="inputField" label="Comments"></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" @click="closeDialog">Close</v-btn>
-          <v-btn color="primary" @click="saveInformation">Save</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </div>
-
+        <v-dialog v-model="dialogVisible" max-width="500">
+          <v-card>
+            <v-card-title>
+              Worked hours
+            </v-card-title>
+            <v-card-text>
+              <v-row>
+                <!-- Hourglass icon -->
+                <v-col cols="1">
+                  <v-icon>mdi-hourglass</v-icon>
+                </v-col>
+                <!-- Dropdowns -->
+                <v-col cols="4">
+                  <v-select
+                    v-model="selectedDropdown1"
+                    :items="dropdownOptions1"
+                    label="Hours"
+                  ></v-select>
+                </v-col>
+                <v-col cols="4">
+                  <v-select
+                    v-model="selectedDropdown2"
+                    :items="dropdownOptions2"
+                    label="Minutes"
+                  ></v-select>
+                </v-col>
+              </v-row>
+              <!-- Input field -->
+              <v-text-field v-model="inputField" label="Comments"></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="primary" @click="closeDialog">Close</v-btn>
+              <v-btn color="primary" @click="saveInformation">Save</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-col>
+    </v-row>
+  </v-container>
 
 </template>
-
 
 
 <style scoped>
@@ -222,6 +231,7 @@ export default {
   margin-left: 0px;
   margin-right: 100px;
 }
+
 .right-section {
   flex: 1;
   padding: 20px;
@@ -250,7 +260,11 @@ export default {
 }
 
 .body {
-    overflow-y: auto;
-  }
+  overflow-y: auto;
+}
+
+.margin-top-right-section {
+  margin-top: 20vh;
+}
 
 </style>
