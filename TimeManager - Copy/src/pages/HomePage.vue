@@ -208,8 +208,8 @@ export default {
               <v-text-field v-model="inputField" label="Comments"></v-text-field>
             </v-card-text>
             <v-card-actions>
-              <v-btn color="primary" @click="closeDialog">Close</v-btn>
-              <v-btn color="primary" @click="saveInformation">Save</v-btn>
+              <v-btn color="purple-lighten-1" @click="closeDialog">Close</v-btn>
+              <v-btn color="purple-lighten-1" @click="saveInformation">Save</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -222,47 +222,9 @@ export default {
 
 <style scoped>
 
-.container {
-  display: flex;
-}
-
-.left-section {
-  display: flex;
-  margin-left: 0px;
-  margin-right: 100px;
-}
-
-.right-section {
-  flex: 1;
-  padding: 20px;
-}
-
-.right-section {
-  display: flex;
-  flex-direction: column;
-}
-
-.time-picker-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 50px;
-  margin-top: 60px;
-}
-
 .button-margin {
   margin-left: 10px;
 }
-
-.table-container {
-  max-height: 1000px; /* set the height as per your requirement */
-  overflow-y: auto; /* add scroll when content exceeds the height */
-}
-
-.body {
-  overflow-y: auto;
-}
-
 .margin-top-right-section {
   margin-top: 20vh;
 }

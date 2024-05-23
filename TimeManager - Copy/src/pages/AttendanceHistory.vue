@@ -10,7 +10,7 @@
       </v-col>
       <!-- Filter button -->
       <v-col cols="2" class="mt-2">
-        <v-btn @click="filterData" color="primary">Filter</v-btn>
+        <v-btn @click="filterData" rounded="xl" size="large" elevation="24" type="submit" color="purple-lighten-2">Filter</v-btn>
       </v-col>
     </v-row>
 
@@ -67,8 +67,8 @@ export default {
         { title: 'Actions', align: '', key: 'actions' },
       ],
       desserts: [
-        { Day: 1, Type: "Full-time", ArrivalTime: "9:00 AM", LeaveTime: "5:00 PM", Break: "1 hour", WorkedHours: "7 hours" },
-        { Day: 2, Type: "Part-time", ArrivalTime: "10:00 AM", LeaveTime: "2:00 PM", Break: "30 minutes", WorkedHours: "3.5 hours" },
+        { Day: 1, Type: "Teleworking Day", ArrivalTime: "9:00 AM", LeaveTime: "5:00 PM", Break: "1 hour", WorkedHours: "7 hours" },
+        { Day: 2, Type: "Normal Day", ArrivalTime: "10:00 AM", LeaveTime: "2:00 PM", Break: "30 minutes", WorkedHours: "3.5 hours" },
         // Add more data objects as needed
       ]
     };

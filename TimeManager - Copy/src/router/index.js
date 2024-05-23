@@ -68,6 +68,46 @@ const router = createRouter({
           component: () => import('@/pages/TeleworkingRequest.vue')
         },
       ]
+    },
+    {
+      path: "/vacation",
+      component: DefaultLayout,
+      children: [
+        {
+          path: '',
+          component: () => import('@/pages/VacationRequest.vue')
+        },
+      ]
+    },
+    {
+      path: "/teamtimesheet",
+      component: DefaultLayout,
+      children: [
+        {
+          path: '',
+          component: () => import('@/pages/TeamTimesheet.vue')
+        },
+      ]
+    },
+    {
+      path: "/teamteleworking",
+      component: DefaultLayout,
+      children: [
+        {
+          path: '',
+          component: () => import('@/pages/TeamTeleworking.vue')
+        },
+      ]
+    },
+    {
+      path: "/teamvacation",
+      component: DefaultLayout,
+      children: [
+        {
+          path: '',
+          component: () => import('@/pages/TeamVacation.vue')
+        },
+      ]
     }
   ]
 })

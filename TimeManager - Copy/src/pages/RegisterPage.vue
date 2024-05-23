@@ -23,7 +23,7 @@ export default {
               <v-text-field v-model="email" label="Email" outlined required type="password"></v-text-field>
               <v-text-field v-model="password" label="Password" outlined required type="password"></v-text-field>
               <v-text-field v-model="password" label="Confirm Password" outlined required type="password"></v-text-field>
-              <v-btn rounded="xl" size="x-large" elevation="24" type="submit" color="purple-lighten-3" block>Register</v-btn>
+              <v-btn rounded="xl" size="x-large" elevation="24" type="submit" color="purple-lighten-2" block>Register</v-btn>
             </v-form>
           </v-card-text>
         </v-card>
