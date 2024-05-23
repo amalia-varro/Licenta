@@ -1,13 +1,13 @@
 <script>
 export default {
-  name: "TestPage"
+name: "TeamTeleworking"
 }
 </script>
 
 <template>
-<h1>Test</h1>
+  $END$
 </template>
 
-<style scoped lang="sass">
+<style scoped>
 
 </style>
