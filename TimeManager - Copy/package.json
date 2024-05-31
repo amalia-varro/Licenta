@@ -11,6 +11,7 @@
     "@mdi/font": "7.0.96",
     "@mdi/js": "^7.4.47",
     "core-js": "^3.34.0",
+    "highcharts-vue": "^2.0.1",
     "roboto-fontface": "*",
     "vue": "^3.4.0",
     "vuetify": "^3.5.0"

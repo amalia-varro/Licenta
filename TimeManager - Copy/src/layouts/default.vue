@@ -69,7 +69,10 @@ export default {
       { title: 'Attendance Record', route: '/' },
       { title: 'Attendance History', route: '/attendance' },
       { title: 'Teleworking Request', route: '/teleworking' },
-      { title: 'Vacation Request', route: '/vacation' }
+      { title: 'Vacation Request', route: '/vacation' },
+      { title: 'Team Timesheet', route: '/' },
+      { title: 'Team Teleworking Request', route: '/' },
+      { title: 'Team Vacation Request', route: '/' }
     ]
   }),
   methods: {

@@ -34,11 +34,23 @@
       </tr>
       </tbody>
     </table>
+    <v-container>
+      <v-row class="mt-5">
+        <v-spacer/>
+        <v-col cols="6">
+          <TimesheetChart :employees="employees"/>
+        </v-col>
+        <v-spacer/>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
 <script>
+import TimesheetChart from "@/components/TimesheetChart.vue";
+
 export default {
+  components: {TimesheetChart},
   data() {
     return {
       searchQuery: '',
