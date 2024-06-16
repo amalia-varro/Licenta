@@ -13,7 +13,7 @@
 
           <v-spacer></v-spacer>
           <v-btn icon="mdi-account" variant="text"></v-btn>
-          <v-btn variant="text">Amalia Varro</v-btn>
+          <v-btn variant="text">{{ userStore.fullName ?? "Hello!" }}</v-btn>
           <v-btn icon="mdi-dots-vertical" variant="text" @click="toggleMenu"></v-btn>
         </v-app-bar>
 
@@ -29,12 +29,9 @@
 
         <div class="gradient-background">
           <!-- Dropdown menu -->
-          <v-menu v-model="menuOpen" class="menu-model">
+          <v-menu v-model="menuOpen" class="menu-model" v-if="userStore.isLoggedIn">
             <!-- Menu items -->
             <v-list>
-              <v-list-item @click="goToProfile">
-                <v-list-item-title>My Profile</v-list-item-title>
-              </v-list-item>
               <v-list-item @click="logout">
                 <v-list-item-title>Logout</v-list-item-title>
               </v-list-item>
@@ -55,6 +52,7 @@
 <script>
 import AppFooter from "@/components/AppFooter.vue";
 import { mdiAccount, mdiClockTimeFourOutline, mdiDotsVertical } from "@mdi/js";
+import {useUserStore} from "@/stores/user";
 
 export default {
   name: "DefaultLayout",
@@ -66,15 +64,23 @@ export default {
     drawer: false,
     menuOpen: false,
     items: [
-      { title: 'Attendance Record', route: '/' },
-      { title: 'Attendance History', route: '/attendance' },
+      // { title: 'Attendance Record', route: '/' },
+      // { title: 'Attendance History', route: '/attendance' },
       { title: 'Teleworking Request', route: '/teleworking' },
       { title: 'Vacation Request', route: '/vacation' },
-      { title: 'Team Timesheet', route: '/' },
-      { title: 'Team Teleworking Request', route: '/' },
-      { title: 'Team Vacation Request', route: '/' }
+      // { title: 'Team Timesheet', route: '/' },
+      // { title: 'Team Teleworking Request', route: '/' },
+      // { title: 'Team Vacation Request', route: '/' }
     ]
   }),
+  setup() {
+    return {
+      userStore: useUserStore()
+    }
+  },
+  mounted() {
+    this.userStore.checkLogin()
+  },
   methods: {
     toggleMenu() {
       this.menuOpen = !this.menuOpen;
@@ -84,6 +90,7 @@ export default {
     },
     logout() {
       // Add your logic to handle logout, such as clearing tokens or user data
+      this.userStore.logout()
       this.$router.push('/login');
     }
   }

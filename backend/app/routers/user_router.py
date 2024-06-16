@@ -31,7 +31,7 @@ def verify_password(real_password: str, login_password: str) -> bool:
 def get_all(db: UsersRepository = Depends(users_repository)):
     all = db.get_all()
     return [
-        {"id": user.id, "full_name": user.full_name, "email": user.email_address} for user in all
+        {"id": user.id, "full_name": user.full_name, "email": user.email_address, "role": user.role} for user in all
     ]
 
 
@@ -62,4 +62,4 @@ def login(user_login: UserLogin, db: UsersRepository = Depends(users_repository)
     if not user or not verify_password(real_password=user.password, login_password=user_login.password):
         raise HTTPException(status_code=400, detail="Invalid username or password")
     token = jwt.encode({"user": user.username}, "very-secret-secret", algorithm="HS256")
-    return {"message": "Login successful", "token": token, "user_id": user.id}
+    return {"message": "Login successful", "token": token, "user_id": user.id, "role": user.role, "full_name": user.full_name}

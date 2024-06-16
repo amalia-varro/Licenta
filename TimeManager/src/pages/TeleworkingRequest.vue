@@ -1,89 +1,7 @@
-<script>
-export default {
-  name: "TeleworkingRequest",
-  data() {
-    return {
-      selectedMonth: null,
-      selectedYear: null,
-      months: [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-      ],
-      years: [
-        2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030
-      ],
-      headers: [
-        { title: 'Requester', align: 'start', key: 'name' },
-        { title: 'Date', align: '', key: 'date' },
-        { title: 'Address', align: '', key: 'address' },
-        { title: 'Status', align: '', key: 'status' },
-        { title: 'Approver', align: '', key: 'approver' },
-        { title: 'Actions', align: '', key: 'actions' },
-      ],
-      desserts: [],  // Removed initial data with Amalia
-      dialogOpen: false,
-      teleworkingDate: null,
-      teleworkingAddress: ""
-    };
-  },
-  methods: {
-    filterData() {
-      // Implement filtering logic here
-    },
-    deleteItem(item) {
-      const index = this.desserts.indexOf(item);
-      if (index !== -1) {
-        this.desserts.splice(index, 1);
-      }
-    },
-    openDialog() {
-      this.dialogOpen = true;
-    },
-    closeDialog() {
-      this.dialogOpen = false;
-    },
-    submitTeleworkingRequest() {
-      if (!this.teleworkingDate || !this.teleworkingAddress) {
-        alert("Please fill in all fields.");
-        return;
-      }
-
-      const existingRequest = this.desserts.find(request => request.date === this.teleworkingDate);
-      if (existingRequest) {
-        alert("A request for this date already exists.");
-        return;
-      }
-
-      this.desserts.push({
-        name: "Requester Name",  // Add logic to get requester's name if needed
-        date: this.teleworkingDate,
-        address: this.teleworkingAddress,
-        status: "Pending",
-        approver: "Manager"  // Adjust as needed
-      });
-
-      this.teleworkingDate = null;
-      this.teleworkingAddress = "";
-      this.closeDialog(); // Close dialog after submitting
-    }
-  }
-};
-</script>
-
 <template>
   <v-container class="attendance-history">
     <!-- Top section -->
     <v-row class="top-section">
-      <v-col cols="5">
-        <v-select v-model="selectedMonth" placeholder="Month" :items="months"></v-select>
-      </v-col>
-      <v-col cols="5">
-        <v-select v-model="selectedYear" placeholder="Year" :items="years"></v-select>
-      </v-col>
-      <!-- Filter button -->
-      <v-col cols="2" class="mt-1">
-        <v-btn @click="filterData" rounded="xl" size="large" elevation="24" type="submit" color="purple-lighten-2">Filter</v-btn>
-      </v-col>
       <v-col cols="6" class="mr-2">
         <v-btn @click="openDialog" rounded="xl" size="large" elevation="24" type="submit" color="purple-lighten-2">Create Teleworking Request</v-btn>
       </v-col>
@@ -97,12 +15,21 @@ export default {
             <tr>
               <td>{{ item.name }}</td>
               <td>{{ item.date }}</td>
-              <td>{{ item.address }}</td>
-              <td>{{ item.status }}</td>
-              <td>{{ item.approver }}</td>
+              <td :class="{
+                'font-weight-bold': item.status !== 'pending',
+                'approved': item.status === 'approved',
+                'disapproved': item.status === 'disapproved',
+              }">{{ item.status }}</td>
+              <td> Manager </td>
               <td>
                 <!-- Actions -->
-                <v-btn icon @click="deleteItem(item)">
+                <v-btn v-show="userStore.role === 'manager'" color="green" icon @click="approveItem(item)">
+                  <v-icon>mdi-check-bold</v-icon>
+                </v-btn>
+                <v-btn  v-show="userStore.role === 'manager'" color="red" icon @click="disapproveItem(item)">
+                  <v-icon>mdi-close-thick</v-icon>
+                </v-btn>
+                <v-btn v-show="item.user_id === userStore.userId && item.status.toLowerCase() === 'pending'" icon @click="deleteItem(item)">
                   <v-icon>mdi-delete</v-icon>
                 </v-btn>
               </td>
@@ -121,9 +48,6 @@ export default {
             <v-col cols="12">
               <v-text-field v-model="teleworkingDate" label="Teleworking Date" type="date" color="purple-lighten-1"></v-text-field>
             </v-col>
-            <v-col cols="12">
-              <v-text-field v-model="teleworkingAddress" label="Address" rows="3" multi-line color="purple-lighten-1"></v-text-field>
-            </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions>
@@ -135,6 +59,101 @@ export default {
   </v-container>
 </template>
 
+<script>
+import {useUserStore} from "@/stores/user";
+import {useTeleworkingStore} from "@/stores/teleworking";
+import _ from "lodash";
+
+export default {
+  name: "TeleworkingRequest",
+  setup() {
+    return {
+      userStore: useUserStore(),
+      teleworkingStore: useTeleworkingStore()
+    }
+  },
+  data() {
+    return {
+      months: [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ],
+      years: [
+        2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030
+      ],
+      headers: [
+        { title: 'Requester', align: 'start', key: 'name' },
+        { title: 'Date', align: '', key: 'date' },
+        { title: 'Status', align: '', key: 'status' },
+        { title: 'Approver', align: '', key: 'approver' },
+        { title: 'Actions', align: '', key: 'actions' },
+      ],
+      desserts: [],  // Removed initial data with Amalia
+      dialogOpen: false,
+      teleworkingDate: null,
+    };
+  },
+  async mounted() {
+    await this.userStore.getUsers()
+    await this.teleworkingStore.getTeleworking()
+
+    this.teleworkingStore.teleworkingRequests.forEach(i => {
+      let user = _.find(this.userStore.users, p => p.id === i.user_id)
+      this.desserts.push({
+        id: i.id,
+        user_id: user.id,
+        name: user.full_name,
+        date: i.date,
+        status: i.status
+      });
+    })
+  },
+  methods: {
+    async approveItem(item) {
+      await this.teleworkingStore.approveTeleworking(item.id)
+      let el = _.find(this.desserts, i => i.id === item.id)
+      el.status = "approved"
+    },
+    async disapproveItem(item) {
+      await this.teleworkingStore.disapproveTeleworking(item.id)
+      let el = _.find(this.desserts, i => i.id === item.id)
+      el.status = "disapproved"
+    },
+    async deleteItem(item) {
+      const index = this.desserts.indexOf(item);
+      if (index !== -1) {
+        this.desserts.splice(index, 1);
+        await this.teleworkingStore.deleteItem(item.id)
+      }
+    },
+    openDialog() {
+      this.dialogOpen = true;
+    },
+    closeDialog() {
+      this.dialogOpen = false;
+    },
+    async submitTeleworkingRequest() {
+      if (!this.teleworkingDate) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      this.desserts.push({
+        name: this.userStore.fullName,
+        date: this.teleworkingDate,
+        status: "pending",
+      });
+      await this.teleworkingStore.makeRequest({
+        user_id: this.userStore.userId,
+        date: this.teleworkingDate
+      })
+
+      this.teleworkingDate = null;
+      this.closeDialog(); // Close dialog after submitting
+    }
+  }
+};
+</script>
 
 <style scoped>
 .top-section {
@@ -169,5 +188,7 @@ export default {
   text-decoration: none;
   color: inherit;
 }
+.approved { color: green}
+.disapproved { color: red}
 </style>
 

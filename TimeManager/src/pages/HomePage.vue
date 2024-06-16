@@ -1,4 +1,6 @@
 <script>
+import {useUserStore} from "@/stores/user";
+
 export default {
   data() {
     return {
@@ -28,6 +30,18 @@ export default {
       dropdownOptions2: [10, 20, 30, 40, 50],
       inputField: '',
     };
+  },
+  setup() {
+    return {
+      userStore: useUserStore()
+    }
+  },
+  async mounted() {
+    this.userStore.checkLogin()
+    if (!this.userStore.isLoggedIn) {
+      this.$router.push({ path: '/login' })
+    }
+    this.$router.push({ path: '/vacation' })
   },
   methods: {
     login() {
