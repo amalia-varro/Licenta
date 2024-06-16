@@ -36,12 +36,13 @@ export default {
       userStore: useUserStore()
     }
   },
-  async mounted() {
+  async created() {
     this.userStore.checkLogin()
     if (!this.userStore.isLoggedIn) {
       this.$router.push({ path: '/login' })
+    } else {
+      this.$router.push({ path: '/vacation' })
     }
-    this.$router.push({ path: '/vacation' })
   },
   methods: {
     login() {
