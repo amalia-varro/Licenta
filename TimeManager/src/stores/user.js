@@ -9,7 +9,8 @@ export const useUserStore = defineStore('store', {
     userId: 0,
     role: null,
     fullName: null,
-    token: null
+    token: null,
+    daysAvailable: 0
   }),
   actions: {
     checkLogin() {
@@ -25,6 +26,11 @@ export const useUserStore = defineStore('store', {
         this.fullName = result.fullName
         this.token = result.token
         this.isLoggedIn = true
+      }
+
+      result = JSON.parse(localStorage.getItem(`${this.userId}-days`))
+      if (result != null) {
+        this.daysAvailable = result
       }
     },
     async getUsers() {
@@ -50,6 +56,18 @@ export const useUserStore = defineStore('store', {
         "fullName": this.fullName,
         "token": this.token,
       }))
+      let result = JSON.parse(localStorage.getItem(`${this.userId}-days`))
+      if (result == null) {
+        localStorage.setItem(`${this.userId}-days`, JSON.stringify(26))
+        this.daysAvailable = 26
+      } else {
+        this.daysAvailable = result ?? 26
+      }
+      console.log("days available", this.daysAvailable)
+    },
+    updateDaysAvailable(days) {
+      this.daysAvailable += days
+      localStorage.setItem(`${this.userId}-days`, JSON.stringify(this.daysAvailable))
     },
     async logout() {
       localStorage.setItem("login", null)

@@ -18,6 +18,9 @@
           Create Vacation Request
         </v-btn>
       </v-col>
+      <v-col>
+        <h2>Available days: {{userStore.daysAvailable}}</h2>
+      </v-col>
       <!--      <v-col cols="auto" class="days-left-box">-->
       <!--        <span class="days-left">{{ availableVacationDays }}</span> Days Left-->
       <!--      </v-col>-->
@@ -157,6 +160,9 @@ export default {
         if (index !== -1) {
           this.availableVacationDays += parseInt(item.days);
           this.desserts.splice(index, 1);
+          let daysRequested = moment(item.date2).diff(moment(item.date1), "days")
+          this.userStore.updateDaysAvailable(parseInt(`${daysRequested}`, 10))
+
         }
         this.vacationStore.deleteItem(item.id)
       }
@@ -197,6 +203,18 @@ export default {
         return
       }
 
+      let daysRequested = moment(this.vacationEndDate).diff(moment(this.vacationStartDate), "days")
+      if (this.userStore.daysAvailable - daysRequested <= 0) {
+        this.closeDialog()
+        this.$swal.fire({
+          title: 'Error!',
+          text: 'Failed create vacation request for given date. Not enough days!',
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
+        return
+      }
+      this.userStore.updateDaysAvailable(parseInt(`-${daysRequested}`, 10))
       await this.vacationStore.makeRequest(
         {
           user_id: this.userStore.userId,
