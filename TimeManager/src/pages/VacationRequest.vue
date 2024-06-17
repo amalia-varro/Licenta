@@ -126,23 +126,26 @@ export default {
   },
   async mounted() {
     await this.userStore.getUsers()
-    await this.vacationStore.getVacations()
-
-    this.vacationStore.vacationRequests.forEach(i => {
-      let user = _.find(this.userStore.users, p => p.id === i.user_id)
-      this.desserts.push({
-        id: i.id,
-        user_id: user.id,
-        name: user.full_name,
-        date1: i.start_date,
-        date2: i.end_date,
-        days: moment(i.end_date).diff(moment(i.start_date), "days"),
-        status: i.status
-      });
-    })
-
+    await this.updateList()
   },
   methods: {
+    async updateList() {
+      this.desserts = []
+      await this.vacationStore.getVacations()
+
+      this.vacationStore.vacationRequests.forEach(i => {
+        let user = _.find(this.userStore.users, p => p.id === i.user_id)
+        this.desserts.push({
+          id: i.id,
+          user_id: user.id,
+          name: user.full_name,
+          date1: i.start_date,
+          date2: i.end_date,
+          days: moment(i.end_date).diff(moment(i.start_date), "days"),
+          status: i.status
+        });
+      })
+    },
     deleteItem(item) {
       if (item.user_id === this.userStore.userId) {
         const index = this.desserts.indexOf(item);
@@ -169,33 +172,12 @@ export default {
     closeDialog() {
       this.dialogOpen = false;
     },
-    calculateDaysDifference(startDate, endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      const timeDifference = end - start;
-      const dayDifference = Math.floor(timeDifference / (1000 * 3600 * 24));
-      return dayDifference + 1;
-    },
     async submitVacationRequest() {
       if (!this.vacationStartDate || !this.vacationEndDate) {
         alert("Please fill in all fields.");
         return;
       }
 
-      const daysRequested = this.calculateDaysDifference(this.vacationStartDate, this.vacationEndDate);
-
-      if (daysRequested > this.availableVacationDays) {
-        alert("Not enough vacation days available.");
-        return;
-      }
-      this.desserts.push({
-        user_id: this.userStore.userId,
-        name: this.userStore.fullName,
-        date1: this.vacationStartDate,
-        date2: this.vacationEndDate,
-        days: daysRequested.toString(),
-        status: "pending"
-      });
       await this.vacationStore.makeRequest(
         {
           user_id: this.userStore.userId,
@@ -203,8 +185,7 @@ export default {
           end_date: this.vacationEndDate,
         }
       )
-
-      this.availableVacationDays -= daysRequested;
+      await this.updateList()
 
       this.vacationStartDate = null;
       this.vacationEndDate = null;

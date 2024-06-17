@@ -1,15 +1,30 @@
 <script>
+import {useUserStore} from "@/stores/user";
+import {useTeleworkingStore} from "@/stores/teleworking";
+import _ from "lodash";
+
 export default {
   data() {
     return {
       searchQuery: '',
-      selectedMonth: '2024-05',
-      requests: [
-        { id: 1, name: 'John Doe', date: '2024-05-01', address: '123 Main St', status: 'Pending' },
-        { id: 2, name: 'Jane Smith', date: '2024-05-02', address: '456 Oak St', status: 'Pending' },
-        // More requests
-      ],
+      selectedMonth: '',
+      requests: [],
     };
+  },
+  setup() {
+    return {
+      userStore: useUserStore(),
+      teleworkingStore: useTeleworkingStore()
+    }
+  },
+  async mounted() {
+    await this.userStore.getUsers()
+    await this.updateList()
+
+    let date = new Date()
+    const addZero = (val) => (val < 10 ? "0" + val : val);
+    let month = addZero(date.getMonth()+1)
+    this.selectedMonth = `${date.getFullYear()}-${month}`
   },
   computed: {
     filteredRequests() {
@@ -20,23 +35,40 @@ export default {
     }
   },
   methods: {
+    async updateList() {
+      this.requests = []
+      await this.teleworkingStore.getTeleworking()
+
+      this.teleworkingStore.teleworkingRequests.forEach(i => {
+        let user = _.find(this.userStore.users, p => p.id === i.user_id)
+        this.requests.push({
+          id: i.id,
+          user_id: user.id,
+          name: user.full_name,
+          date: i.date,
+          status: i.status
+        });
+      })
+    },
     searchEmployee() {
       console.log('Searching for:', this.searchQuery);
     },
     updateCalendar() {
       console.log('Selected month:', this.selectedMonth);
     },
-    approveRequest(id) {
+    async approveRequest(id) {
       const request = this.requests.find(req => req.id === id);
       if (request) {
-        request.status = 'Approved';
+        request.status = 'approved';
       }
+      await this.teleworkingStore.approveTeleworking(id)
     },
-    declineRequest(id) {
+    async declineRequest(id) {
       const request = this.requests.find(req => req.id === id);
       if (request) {
-        request.status = 'Declined';
+        request.status = 'disapproved';
       }
+      await this.teleworkingStore.disapproveTeleworking(id)
     }
   }
 };
@@ -62,7 +94,6 @@ export default {
       <tr>
         <th>Employee Name</th>
         <th>Date</th>
-        <th>Address</th>
         <th>Status</th>
         <th>Actions</th>
       </tr>
@@ -71,7 +102,6 @@ export default {
       <tr v-for="request in filteredRequests" :key="request.id">
         <td>{{ request.name }}</td>
         <td>{{ request.date }}</td>
-        <td>{{ request.address }}</td>
         <td :class="{'approved': request.status === 'Approved', 'pending': request.status === 'Pending', 'declined': request.status === 'Declined'}">{{ request.status }}</td>
         <td>
           <button @click="approveRequest(request.id)" :disabled="request.status === 'Approved'" class="approve-button">

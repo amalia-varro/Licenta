@@ -42,44 +42,84 @@
 </template>
 
 <script>
+import {useUserStore} from "@/stores/user";
+import {useVacationStore} from "@/stores/vacation";
+import _ from "lodash";
+import moment from "moment/moment";
+import {da} from "vuetify/locale";
+
 export default {
   data() {
     return {
       searchQuery: '',
-      selectedMonth: '2024-05',
-      requests: [
-        { id: 1, name: 'John Doe', startDate: '2024-05-01', endDate: '2024-05-05', days: 5, status: 'Pending' },
-        { id: 2, name: 'Jane Smith', startDate: '2024-05-10', endDate: '2024-05-15', days: 6, status: 'Pending' },
-        // More requests
-      ],
+      selectedMonth: "",
+      requests: [],
     };
+  },
+  setup() {
+    return {
+      userStore: useUserStore(),
+      vacationStore: useVacationStore()
+    }
   },
   computed: {
     filteredRequests() {
+      if (this.searchQuery === "") {
+        return this.requests
+      }
       return this.requests.filter(request =>
         request.name.toLowerCase().includes(this.searchQuery.toLowerCase()) &&
         request.startDate.startsWith(this.selectedMonth)
       );
     }
   },
+  async mounted() {
+    await this.userStore.getUsers()
+    await this.updateList()
+
+    let date = new Date()
+    const addZero = (val) => (val < 10 ? "0" + val : val);
+    let month = addZero(date.getMonth()+1)
+    this.selectedMonth = `${date.getFullYear()}-${month}`
+  },
   methods: {
+    async updateList() {
+      this.requests = []
+      await this.vacationStore.getVacations()
+
+      this.vacationStore.vacationRequests.forEach(i => {
+        let user = _.find(this.userStore.users, p => p.id === i.user_id)
+        console.log(this.userStore.users, i)
+        this.requests.push({
+          id: i.id,
+          user_id: user.id,
+          name: user.full_name,
+          startDate: i.start_date,
+          endDate: i.end_date,
+          days: moment(i.end_date).diff(moment(i.start_date), "days"),
+          status: i.status
+        });
+      })
+    },
     searchEmployee() {
       console.log('Searching for:', this.searchQuery);
     },
     updateCalendar() {
       console.log('Selected month:', this.selectedMonth);
     },
-    approveRequest(id) {
+    async approveRequest(id) {
       const request = this.requests.find(req => req.id === id);
       if (request) {
-        request.status = 'Approved';
+        request.status = 'approved';
       }
+      await this.vacationStore.approveVacation(id)
     },
-    declineRequest(id) {
+    async declineRequest(id) {
       const request = this.requests.find(req => req.id === id);
       if (request) {
-        request.status = 'Declined';
+        request.status = 'disapproved';
       }
+      await this.vacationStore.disapproveVacation(id)
     }
   }
 };

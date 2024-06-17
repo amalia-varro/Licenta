@@ -95,20 +95,24 @@ export default {
   },
   async mounted() {
     await this.userStore.getUsers()
-    await this.teleworkingStore.getTeleworking()
-
-    this.teleworkingStore.teleworkingRequests.forEach(i => {
-      let user = _.find(this.userStore.users, p => p.id === i.user_id)
-      this.desserts.push({
-        id: i.id,
-        user_id: user.id,
-        name: user.full_name,
-        date: i.date,
-        status: i.status
-      });
-    })
+    await this.updateList()
   },
   methods: {
+    async updateList() {
+      this.desserts = []
+      await this.teleworkingStore.getTeleworking()
+
+      this.teleworkingStore.teleworkingRequests.forEach(i => {
+        let user = _.find(this.userStore.users, p => p.id === i.user_id)
+        this.desserts.push({
+          id: i.id,
+          user_id: user.id,
+          name: user.full_name,
+          date: i.date,
+          status: i.status
+        });
+      })
+    },
     async approveItem(item) {
       await this.teleworkingStore.approveTeleworking(item.id)
       let el = _.find(this.desserts, i => i.id === item.id)
@@ -138,15 +142,11 @@ export default {
         return;
       }
 
-      this.desserts.push({
-        name: this.userStore.fullName,
-        date: this.teleworkingDate,
-        status: "pending",
-      });
       await this.teleworkingStore.makeRequest({
         user_id: this.userStore.userId,
         date: this.teleworkingDate
       })
+      await this.updateList()
 
       this.teleworkingDate = null;
       this.closeDialog(); // Close dialog after submitting

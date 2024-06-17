@@ -39,7 +39,11 @@ export default {
     async onLogin() {
       try {
         await this.userStore.login(this.username, this.password)
-        this.$router.push({ path: '/vacation' })
+        if (this.userStore.role === "manager") {
+          this.$router.push({ path: '/teamvacation' })
+        } else {
+          this.$router.push({ path: '/vacation' })
+        }
       } catch (e) {
         console.error(e)
         this.$swal.fire({

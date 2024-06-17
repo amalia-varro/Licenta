@@ -2,15 +2,22 @@ import uvicorn
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
+from app.repository.projects import ProjectsRepository
 from app.routers.projects import router as projects_router
 from app.routers.user_router import router as user_router
 from app.routers.worklog_router import router as worklog_router
 from app.routers.teleworking_router import router as teleworking_router
 from app.routers.timeoff_router import router as timeoff_router
-from app.utils.db import engine, Base
+from app.utils.db import engine, Base, get_db
 
 
 def create_app():
+    db = next(get_db())
+    repo = ProjectsRepository(db=db)
+    projects = repo.get_all()
+    if len(projects) == 0:
+        repo.create_project("Default")
+
     app = FastAPI(docs_url="/")
     app.add_middleware(
         CORSMiddleware,

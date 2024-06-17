@@ -19,7 +19,7 @@
 
         <v-navigation-drawer v-model="drawer" :location="$vuetify.display.mobile ? 'bottom' : undefined" temporary>
           <v-list>
-            <v-list-item v-for="item in items" :key="item.title">
+            <v-list-item v-for="item in routeItems" :key="item.title">
               <router-link :to="item.route" class="v-list-item--link">
                 <v-list-item-title>{{ item.title }}</v-list-item-title>
               </router-link>
@@ -64,10 +64,12 @@ export default {
     drawer: false,
     menuOpen: false,
     items: [
-      // { title: 'Attendance Record', route: '/' },
-      // { title: 'Attendance History', route: '/attendance' },
-      { title: 'Teleworking Request', route: '/teleworking' },
-      { title: 'Vacation Request', route: '/vacation' },
+      { title: 'Attendance History', route: '/attendance', role: "manager" },
+      { title: 'WorkLog', route: '/', role: "employee" },
+      { title: 'Team Teleworking', route: '/teamteleworking', role: "manager" },
+      { title: 'Team Vacation', route: '/teamvacation', role: "manager" },
+      { title: 'Teleworking Request', route: '/teleworking', role: "employee" },
+      { title: 'Vacation Request', route: '/vacation', role: "employee" },
       // { title: 'Team Timesheet', route: '/' },
       // { title: 'Team Teleworking Request', route: '/' },
       // { title: 'Team Vacation Request', route: '/' }
@@ -76,6 +78,12 @@ export default {
   setup() {
     return {
       userStore: useUserStore()
+    }
+  },
+  computed: {
+    routeItems() {
+      let userRole = this.userStore.role
+      return this.items.filter(i => i.role === userRole)
     }
   },
   mounted() {
