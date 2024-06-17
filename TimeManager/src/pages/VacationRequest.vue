@@ -26,7 +26,7 @@
     <!-- Table -->
     <v-row>
       <v-col cols="12">
-        <v-data-table :headers="headers" :items="desserts">
+        <v-data-table :headers="headers" :items="vacationRequestsForUser">
           <template v-slot:item="{ item }">
             <tr>
               <td>{{ item.name }}</td>
@@ -128,6 +128,11 @@ export default {
     await this.userStore.getUsers()
     await this.updateList()
   },
+  computed: {
+    vacationRequestsForUser() {
+      return _.filter(this.desserts, i => i.user_id === this.userStore.userId)
+    }
+  },
   methods: {
     async updateList() {
       this.desserts = []
@@ -176,6 +181,20 @@ export default {
       if (!this.vacationStartDate || !this.vacationEndDate) {
         alert("Please fill in all fields.");
         return;
+      }
+
+      let result = _.find(this.vacationStore.vacationRequests, i => {
+        return i.user_id === this.userStore.userId && i.start_date === this.vacationStartDate && i.end_date === this.vacationEndDate
+      })
+      if (result) {
+        this.$swal.fire({
+          title: 'Error!',
+          text: 'Failed create vacation request for given date. Already exists!',
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
+        this.closeDialog()
+        return
       }
 
       await this.vacationStore.makeRequest(

@@ -10,7 +10,7 @@
     <!-- Table -->
     <v-row>
       <v-col cols="12">
-        <v-data-table :headers="headers" :items="desserts">
+        <v-data-table :headers="headers" :items="teleworkingRequestsForUser">
           <template v-slot:item="{ item }">
             <tr>
               <td>{{ item.name }}</td>
@@ -70,6 +70,11 @@ export default {
     return {
       userStore: useUserStore(),
       teleworkingStore: useTeleworkingStore()
+    }
+  },
+  computed: {
+    teleworkingRequestsForUser() {
+      return _.filter(this.desserts, i => i.user_id === this.userStore.userId)
     }
   },
   data() {
@@ -140,6 +145,20 @@ export default {
       if (!this.teleworkingDate) {
         alert("Please fill in all fields.");
         return;
+      }
+
+      let result = _.find(this.teleworkingStore.teleworkingRequests, i => {
+        return i.user_id === this.userStore.userId && i.date === this.teleworkingDate
+      })
+      if (result) {
+        this.$swal.fire({
+          title: 'Error!',
+          text: 'Failed create teleworking request for given date. Already exists!',
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
+        this.closeDialog()
+        return
       }
 
       await this.teleworkingStore.makeRequest({
