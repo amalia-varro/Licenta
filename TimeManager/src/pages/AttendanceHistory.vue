@@ -14,6 +14,7 @@
           <template v-slot:item="{ item }">
             <tr>
               <td>{{ item.name }}</td>
+              <td>{{ item.date }}</td>
               <td>{{ item.ArrivalTime }}</td>
               <td>{{ item.LeaveTime }}</td>
               <td>{{ item.Break }}</td>
@@ -30,7 +31,7 @@
 <script>
 import {useUserStore} from "@/stores/user";
 import {useWorklogStore} from "@/stores/worklog";
-import moment from "moment";
+import humanizeDuration from "humanize-duration";
 import _ from "lodash";
 
 export default {
@@ -56,9 +57,10 @@ export default {
       }
       this.desserts.push({
         name: user.full_name,
+        date: i.date,
         ArrivalTime: i.start_hour,
         LeaveTime: i.end_hour,
-        WorkedHours: `${this.differenceInHours(i.start_hour, i.end_hour)} hours`,
+        WorkedHours: humanizeDuration(this.differenceInHours(i.start_hour, i.end_hour, breakTime) * 3600000),
         Break: breakTime
       })
     })
@@ -76,20 +78,18 @@ export default {
       ],
       headers: [
         { title: 'Name', align: '', key: 'name' },
+        { title: 'Date', align: '', key: 'date' },
         { title: 'Arrival Time', align: '', key: 'ArrivalTime' },
         { title: 'Leave Time', align: '', key: 'leaveTime' },
         { title: 'Break', align: '', key: 'break' },
         { title: 'Worked Hours', align: '', key: 'workedHours' },
       ],
       desserts: [
-        { name: "pulea", ArrivalTime: "9:00 AM", LeaveTime: "5:00 PM", Break: "1 hour", WorkedHours: "7 hours" },
-        { name: "pulea", ArrivalTime: "10:00 AM", LeaveTime: "2:00 PM", Break: "30 minutes", WorkedHours: "3.5 hours" },
-        // Add more data objects as needed
       ]
     };
   },
   methods: {
-    differenceInHours(startTime, endTime) {
+    differenceInHours(startTime, endTime, breakTime = "0 0") {
       const startParts = startTime.split(":");
       const endParts = endTime.split(":");
 
@@ -99,13 +99,13 @@ export default {
       const endHours = parseInt(endParts[0], 10);
       const endMinutes = parseInt(endParts[1], 10);
       const endSeconds = parseInt(endParts[2], 10);
-
+      const breakTimeMins = parseInt(breakTime.split(" ")[0]) * 60
       // ... rest of the logic with adjustments for seconds
       const totalSeconds = (endHours - startHours) * 3600 +
         (endMinutes - startMinutes) * 60 +
-        (endSeconds - startSeconds);
+        (endSeconds - startSeconds) - breakTimeMins;
       const totalHours = totalSeconds / 3600;
-      return Math.abs(Math.round(totalHours));
+      return Math.abs(totalHours);
     },
     filterData() {
       // Implement filtering logic here
