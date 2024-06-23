@@ -91,5 +91,5 @@ fabric.properties
 
 !.idea/codeStyles
 !.idea/runConfigurations
-
+*.pyc
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all
