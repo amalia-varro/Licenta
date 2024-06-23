@@ -37,7 +37,7 @@
               <td>{{ item.name }}</td>
               <td>{{ item.date1 }}</td>
               <td>{{ item.date2 }}</td>
-              <td>{{ item.days }}</td>
+              <td>{{ item.days + 1}}</td>
               <td :class="{
                 'font-weight-bold': item.status !== 'pending',
                 'approved': item.status === 'approved',
@@ -162,7 +162,7 @@ export default {
         if (index !== -1) {
           this.availableVacationDays += parseInt(item.days);
           this.desserts.splice(index, 1);
-          let daysRequested = moment(item.date2).diff(moment(item.date1), "days")
+          let daysRequested = moment(item.date2).diff(moment(item.date1), "days") + 1
           this.userStore.updateDaysAvailable(parseInt(`${daysRequested}`, 10))
 
         }
@@ -205,7 +205,7 @@ export default {
         return
       }
 
-      let daysRequested = moment(this.vacationEndDate).diff(moment(this.vacationStartDate), "days")g
+      let daysRequested = moment(this.vacationEndDate).diff(moment(this.vacationStartDate), "days") + 1
       if (this.userStore.daysAvailable - daysRequested <= 0) {
         this.closeDialog()
         this.$swal.fire({
