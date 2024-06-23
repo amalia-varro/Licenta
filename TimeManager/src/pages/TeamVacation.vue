@@ -29,7 +29,7 @@
         <td>{{ request.name }}</td>
         <td>{{ request.startDate }}</td>
         <td>{{ request.endDate }}</td>
-        <td>{{ request.days }}</td>
+        <td>{{ request.days + 1}}</td>
         <td :class="{'approved': request.status === 'Approved', 'declined': request.status === 'Declined', 'pending': request.status === 'Pending'}">{{ request.status }}</td>
         <td>
           <button @click="approveRequest(request.id)" :disabled="request.status === 'Approved'" class="approve-button">Approve</button>
@@ -46,7 +46,7 @@ import {useUserStore} from "@/stores/user";
 import {useVacationStore} from "@/stores/vacation";
 import _ from "lodash";
 import moment from "moment/moment";
-import {da} from "vuetify/locale";
+
 
 export default {
   data() {
