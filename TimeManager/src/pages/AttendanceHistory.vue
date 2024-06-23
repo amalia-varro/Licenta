@@ -60,7 +60,7 @@ export default {
         date: i.date,
         ArrivalTime: i.start_hour,
         LeaveTime: i.end_hour,
-        WorkedHours: humanizeDuration(this.differenceInHours(i.start_hour, i.end_hour, breakTime) * 3600000),
+        WorkedHours: humanizeDuration(this.differenceInHours(i.start_hour, i.end_hour, breakTime) * 3600000, {units:["h","m"]}),
         Break: breakTime
       })
     })
@@ -100,21 +100,14 @@ export default {
       const endMinutes = parseInt(endParts[1], 10);
       const endSeconds = parseInt(endParts[2], 10);
       const breakTimeMins = parseInt(breakTime.split(" ")[0]) * 60
-      // ... rest of the logic with adjustments for seconds
       const totalSeconds = (endHours - startHours) * 3600 +
         (endMinutes - startMinutes) * 60 +
         (endSeconds - startSeconds) - breakTimeMins;
       const totalHours = totalSeconds / 3600;
       return Math.abs(totalHours);
     },
-    filterData() {
-      // Implement filtering logic here
-    },
-    editItem(item) {
-      // Handle edit action
-    },
+
     deleteItem(item) {
-      // Handle delete action
     }
   }
 };
@@ -122,7 +115,7 @@ export default {
 
 <style scoped>
 .attendance-history {
-  /* Add styling for the main container */
+
 }
 
 .top-section {
@@ -133,8 +126,8 @@ export default {
   font-weight: bold;
   color: #ba68c8;
   margin-bottom: 20px;
-  text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4); /* Adaugă umbre */
-  transition: text-shadow 0.3s; /* Adaugă o tranziție pentru umbra textului */
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+  transition: text-shadow 0.3s;
   text-align: center;
 }
 </style>

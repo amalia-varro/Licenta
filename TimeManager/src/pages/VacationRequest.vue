@@ -19,7 +19,9 @@
         </v-btn>
       </v-col>
       <v-col>
-        <h2>Available days: {{userStore.daysAvailable}}</h2>
+        <h2>
+          <span class="purple-text">Available days:</span> {{userStore.daysAvailable}}
+        </h2>
       </v-col>
       <!--      <v-col cols="auto" class="days-left-box">-->
       <!--        <span class="days-left">{{ availableVacationDays }}</span> Days Left-->
@@ -203,7 +205,7 @@ export default {
         return
       }
 
-      let daysRequested = moment(this.vacationEndDate).diff(moment(this.vacationStartDate), "days")
+      let daysRequested = moment(this.vacationEndDate).diff(moment(this.vacationStartDate), "days")g
       if (this.userStore.daysAvailable - daysRequested <= 0) {
         this.closeDialog()
         this.$swal.fire({
@@ -240,18 +242,15 @@ export default {
   justify-content: space-between;
 }
 
-.days-left-box {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end; /* Schimbăm de la 'center' la 'flex-end' */
-  margin-right: 450px; /* Ajustează marginile dacă este necesar */
-}
-
-.days-left {
-  font-size: 24px; /* Adjust font size as needed */
-  font-weight: bold;
-  color: rgb(171, 71, 188); /* Purple color */
-}
 .approved { color: green}
 .disapproved { color: red}
+
+.purple-text {
+  font-weight: bold;
+  color: #ba68c8;
+  margin-bottom: 20px;
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+  transition: text-shadow 0.3s;
+  text-align: center;
+}
 </style>
